@@ -1,0 +1,43 @@
+name: binary increment
+source code: |-
+  input: '*1010 01 101*'
+  blank: ' '
+  start state: start
+  table:
+    start:
+      0: {write: 'a', R: next}
+      1: {write: 'b', R: next}
+      ['a', 'b', '*']: R
+      ' ': {write: '+', L: end}
+      
+    next:
+      [0, 1, 'a','b']: R
+      '*': {write: '*', L: change_last}
+      ' ': {write: ' ', R: start}
+        
+    change_last:
+      ['a','b', ' ']: L
+      0: {write: 'a', L: go_next}
+      1: {write: 'b', L: go_next}
+      '*': {write: '*', R: go_next}
+    
+    go_next:
+      [0, 1, 'a','b']: L
+      ' ': {write: ' ', L: change_last}
+      '*': {write: '*', R: start}
+    
+    end:
+      ['*']: L
+      'a': {write: '0', L}
+      'b': {write: '1', L}
+      ' ': {write: ' ', R: done}
+      
+    done:
+      
+positions:
+  start: {x: 420.68, y: 240.63, fixed: false}
+  next: {x: 401.33, y: 101.43, fixed: false}
+  change_last: {x: 278.69, y: 176.78, fixed: false}
+  go_next: {x: 299.08, y: 316.89, fixed: false}
+  end: {x: 504.32, y: 352.87, fixed: false}
+  done: {x: 646.5, y: 403}

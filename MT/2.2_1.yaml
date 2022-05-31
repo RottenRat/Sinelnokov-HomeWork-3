@@ -1,0 +1,57 @@
+name: binary increment
+source code: |-
+  input: '000111222'
+  blank: ' '
+  start state: start_check
+  table:
+
+    start_check:
+    # На 1-ом шаге: Нашли "0", заменили на "x". Перешли в состояние "Найти 1"
+    # Если вст. пустой символ, то выдаем T и завершаем работу.
+      0: {write: x, R: find_one}
+      [1, 2]: {L: failclear}
+      ' ': {R: checkfull}
+      
+    # Ищем "0". Если нашли, то снова ищем "1"
+    # Если дошли до пустого символа, нужно проверить отс. других символов
+    find_zero:
+      0: {write: x, R: find_one}
+      [1, 2, x]: L
+      ' ': {R: checkfull}
+      
+    #  Нашли 1, перешли в состояние "Найти 2"
+    find_one:
+      [0, x]: R
+      1: {write: x, R: find_two}
+      [2, ' ']: {L: failclear}
+      
+    # Нашли "2", то снова ищем "0"
+    find_two:
+      [1, x]: R
+      [0, ' ']: {L: failclear}
+      2: {write: x, L: find_zero}
+      
+    failclear:
+      [0, 1, 2, x]: L
+      ' ': {R : fail}
+      
+    fail:
+      [0, 1, 2, x]: {write: ' ', R}
+      ' ': {write: F, L: done}
+    
+    # Проверка. Если "x", то стираем этот символ.
+    checkfull:
+      x: {write: ' ', R}
+      [0, 1, 2]: {write: ' ', R: fail}
+      ' ': {write: T, L: done}
+      
+    done:
+positions:
+  start_check: {x: 419.18, y: 322.59, fixed: false}
+  find_zero: {x: 417.07, y: 226.28, fixed: false}
+  find_one: {x: 286.48, y: 254.61, fixed: false}
+  find_two: {x: 311.18, y: 116.03, fixed: false}
+  failclear: {x: 429.86, y: 188.14, fixed: false}
+  fail: {x: 484.67, y: 349.32, fixed: false}
+  checkfull: {x: 565.89, y: 253.26, fixed: false}
+  done: {x: 646.5, y: 403}

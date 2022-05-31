@@ -1,0 +1,65 @@
+name: binary increment
+source code: |-
+  input: '111*11='
+  blank: ' '
+  start state: start_mul
+  table:
+
+    start_mul:
+      1: {write: x, R: find_second}
+      x: R
+      '*': {L: left_end}
+      
+    # Идем ко 2-ому слагаемому
+    find_second:
+      1: R
+      '*': {R: x_second}
+      
+    # Обработка 2-ого слагаемого
+    x_second:
+      x: R
+      1: {write: x, R: write_in_answer}
+      =: {L: recover_second}
+      
+    # Приписываем "1" в ответ
+    write_in_answer:
+      [1, =]: R
+      ' ': {write: 1, L: back_to_second}
+      
+    # Возвращаемся ко 2-ому слагаемому
+    back_to_second:
+      [1, =]: L
+      x: {R: x_second}
+      
+    # Восстанавливаем 2-ое слагаемое (Н-р, xx -> 11)
+    recover_second:
+      x: {write: 1, L}
+      '*': {L: back_to_first}
+      
+    # Возвращаемся к 1-ому слагаемому; обр. оставшиеся разряды 1-ого слагаемого
+    back_to_first:
+      1: L
+      x: {R: start_mul}
+      
+    # Возвращаемся в начало
+    left_end:
+      x: L
+      ' ': {R: del}
+      
+    # Удаляем входные данные
+    del:
+      [1, '*', x]: {write: ' ', R: del}
+      =: {write: ' ', R: done}
+      
+    done:
+positions:
+  start_mul: {x: 375.1, y: 89.77, fixed: false}
+  find_second: {x: 334.98, y: 249.53, fixed: false}
+  x_second: {x: 444.97, y: 339.81, fixed: false}
+  write_in_answer: {x: 503.66, y: 469.97, fixed: false}
+  back_to_second: {x: 360.58, y: 456.42, fixed: false}
+  recover_second: {x: 376.72, y: 203.31, fixed: false}
+  back_to_first: {x: 239.46, y: 122.74, fixed: false}
+  left_end: {x: 288.64, y: 197.28, fixed: false}
+  del: {x: 448.86, y: 162.93, fixed: false}
+  done: {x: 570, y: 250}

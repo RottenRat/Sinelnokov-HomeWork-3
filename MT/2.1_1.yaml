@@ -1,0 +1,28 @@
+name: binary increment
+source code: |+
+  input: '111+11'
+  blank: ' '
+  start state: find_plus
+  table:
+
+    # Идем вправо до "+"
+    find_plus:
+      1: R
+      +: {write: 1, R: write_plus}
+      
+    # Заменяем "+" на "1"
+    write_plus:
+      1: {write: +, L: find_plus}
+      ' ': {L: last}
+      
+    # Удаляем посл. "1"
+    last:
+      1: {write: ' ', L: done}
+      
+    done:
+
+positions:
+  find_plus: {x: 275.17, y: 388.16, fixed: false}
+  write_plus: {x: 366.02, y: 286.98}
+  last: {x: 508.2, y: 247.79, fixed: false}
+  done: {x: 672, y: 261.09}

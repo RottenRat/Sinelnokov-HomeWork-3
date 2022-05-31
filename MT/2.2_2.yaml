@@ -1,0 +1,71 @@
+name: binary increment
+source code: |-
+  input: '([{{}}])'
+  blank: ' '
+  start state: start_check
+  table:
+
+    start_check:
+    # На 1-ом шаге: Ищем 1-ую открыв. скобку. Переходим в состояние "Найти соот. закрывающ. скобку"
+    # Если вст. пустой символ, то выдаем T и завершаем работу.
+      ['(', '[', '{']: {R: find_closed}
+      [')', ']', '}']: {L: failclear}
+      ' ': {R: checkfull}
+      
+    find_closed:
+      ' ': {L: failcheck} 
+      ['(', '[', '{','x']: R
+      ')': {write: 'x', L: closed_one}
+      ']': {write: 'x', L: closed_two}
+      '}': {write: 'x', L: closed_three}
+      
+    closed_one:
+      ' ': {R: failclear}
+      '(': {write: 'x', R:  find_closed}
+      ['[', '{']: {L: failclear}
+      'x': L
+    
+    closed_two:
+      ' ': {R: failclear}
+      '[': {write: 'x', R: find_closed}
+      ['(', '{']: {L: failclear}
+      'x': L
+
+    closed_three:
+      ' ': {R: failclear}
+      '{': {write: 'x', R: find_closed}
+      ['[', '(']: {L: failclear}
+      'x': L 
+      
+    failcheck:
+      ['(', '[', '{']: {L: failclear}
+      'x': L
+      ' ': {R: checkfull}
+      
+    failclear:
+      ['(', ')', '[', ']', '{', '}', 'x']: L
+      ' ': {R: fail}
+    
+    # Очистить ленту и выдать ошибку
+    fail:
+      ['(', ')', '[', ']', '{', '}', 'x']: {write: ' ', R}
+      ' ': {write: F, L: done}
+    
+    # Очистить ленту и и написать "T"
+    checkfull:
+      x: {write: ' ', R}
+      ' ': {write: T, L: done}
+      
+    done:
+      
+positions:
+  start_check: {x: 365.1, y: 339.42, fixed: false}
+  find_closed: {x: 333.04, y: 188.29, fixed: false}
+  closed_one: {x: 243.85, y: 287.59, fixed: false}
+  closed_two: {x: 310.52, y: 54.71, fixed: false}
+  closed_three: {x: 419.97, y: 68.07, fixed: false}
+  failcheck: {x: 428.28, y: 312.76, fixed: false}
+  failclear: {x: 382.74, y: 195.54, fixed: false}
+  fail: {x: 531.95, y: 264.69, fixed: false}
+  checkfull: {x: 490.25, y: 435.96, fixed: false}
+  done: {x: 646.5, y: 403}
